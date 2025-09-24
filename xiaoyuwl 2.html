@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>  下载页</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <iframe id="embeddedPage" src=""></iframe>
+
+    <script>
+        function getQueryParam(param) {
+            return new URLSearchParams(window.location.search).get(param);
+        }
+        function decodeBase64Url(encodedUrl) {
+            return decodeURIComponent(atob(encodedUrl.replace(/-/g, '+').replace(/_/g, '/')));
+        }
+        const encodedUrl = getQueryParam('y');
+        if (encodedUrl) {
+            const decodedUrl = decodeBase64Url(encodedUrl);
+            document.getElementById('embeddedPage').src = decodedUrl;
+            fetch(`proxy.php?url=${encodeURIComponent(decodedUrl)}`)
+                .then(res => res.json())
+                .then(data => document.title = data.title || '下载页')
+                .catch(() => document.title = '下载页');
+        } else {
+            document.body.innerHTML = '<p>错误：缺少必要参数y</p>';
+        }
+    </script>
+</body>
+</html>
